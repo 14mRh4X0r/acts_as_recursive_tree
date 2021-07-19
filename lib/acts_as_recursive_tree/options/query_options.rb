@@ -2,7 +2,7 @@ module ActsAsRecursiveTree
   module Options
     class QueryOptions
 
-      STRATEGIES = %i[subselect, join].freeze
+      STRATEGIES = %i[subselect join].freeze
 
       attr_accessor :condition
       attr_reader :ensure_ordering, :query_strategy
