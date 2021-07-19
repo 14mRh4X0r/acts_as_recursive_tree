@@ -42,7 +42,10 @@ module ActsAsRecursiveTree
     ##
     # Returns the root node of the tree.
     def root
-      self_and_ancestors.where(_recursive_tree_config.parent_key => nil).first
+      scope = self_and_ancestors
+      scope.where(_recursive_tree_config.parent_key => nil)
+           .or(scope.where.not(_recursive_tree_config.parent_type_column => base_class.to_s))
+           .first
     end
 
     ##
