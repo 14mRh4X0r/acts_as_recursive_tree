@@ -111,14 +111,13 @@ module ActsAsRecursiveTree
         ).project(
           id_node,
           base_table[parent_key],
+          base_table[parent_type_column],
           Arel.sql('0').as(depth_column.to_s)
         )
       end
 
       def build_union_select
-        join_condition = apply_parent_type_column(
-          traversal_strategy.build(self)
-        )
+        join_condition = traversal_strategy.build(self)
 
         select_manager = base_table.join(travers_loc_table).on(join_condition)
 
@@ -129,16 +128,11 @@ module ActsAsRecursiveTree
         relation.arel
       end
 
-      def apply_parent_type_column(arel_condition)
-        return arel_condition if parent_type_column.blank?
-
-        arel_condition.and(base_table[parent_type_column].eq(klass.base_class))
-      end
-
       def build_base_join_select(select_manager)
         klass.select(
           base_table[primary_key],
           base_table[parent_key],
+          base_table[parent_type_column],
           Arel.sql(
             (travers_loc_table[depth_column] + 1).to_sql
           ).as(depth_column.to_s)
